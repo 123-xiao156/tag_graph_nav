@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/iimt/dtx_ws/src/diff_wheel_agv-master/build/cmake_install.cmake",
+		"/home/iimt/dtx_ws/src/diff_wheel_agv-master/build/gtest/cmake_install.cmake",
+		"/home/iimt/dtx_ws/src/diff_wheel_agv-master/build/gtest/googlemock/cmake_install.cmake",
+		"/home/iimt/dtx_ws/src/diff_wheel_agv-master/build/gtest/googletest/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

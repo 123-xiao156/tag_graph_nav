@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20260602-1139-Experimental"
+	Name="iimt-Inspiron-15-5501"
+	Generator="ctest-4.1.2"
+	CompilerName="/usr/bin/c++"
+	CompilerVersion="9.4.0"
+	OSName="Linux"
+	Hostname="iimt-Inspiron-15-5501"
+	OSRelease="5.15.0-139-generic"
+	OSVersion="#149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="126"
+	ModelName="Intel(R) Core(TM) i5-1035G1 CPU @ 1.00GHz"
+	ProcessorCacheSize="6144"
+	NumberOfLogicalCPU="8"
+	NumberOfPhysicalCPU="4"
+	TotalVirtualMemory="2047"
+	TotalPhysicalMemory="15757"
+	LogicalProcessorsPerPhysical="2"
+	ProcessorClockFrequency="2531.78"
+	>
+	<Testing>
+		<StartDateTime>Jun 06 09:02 CST</StartDateTime>
+		<StartTestTime>1780707758</StartTestTime>
+		<TestList/>
+		<EndDateTime>Jun 06 09:02 CST</EndDateTime>
+		<EndTestTime>1780707758</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

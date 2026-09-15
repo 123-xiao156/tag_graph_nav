@@ -1,0 +1,8 @@
+prefix=/home/iimt/dtx_ws/install
+
+Name: arm_get_put
+Description: Description of arm_get_put
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

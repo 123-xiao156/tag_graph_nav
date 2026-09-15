@@ -1,0 +1,8 @@
+prefix=/home/iimt/dtx_ws/install
+
+Name: agv_bringup
+Description: Description of agv_bringup
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/iimt/dtx_ws/src/diff_wheel_agv-master/build/devel/setup.sh

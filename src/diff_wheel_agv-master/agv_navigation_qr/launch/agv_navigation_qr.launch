@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+	<include file="$(find agv_bringup)/launch/agv_robot.launch">
+		<arg name="rviz" value="false"/>
+	</include>
+	<!--param name="port" value="/dev/ttyACM0"/-->
+  <!--node name="arm_get_put_node" pkg="arm_get_put" type="arm_get_put_service.py" output="screen"/-->
+	<!--node name="auto_nav" pkg="agv_navigation_qr" type="autonav.py" output="screen" respawn="true"/-->
+	<include file="$(find agv_camera)/launch/agv_camera.launch"/>
+	<include file="$(find agv_camera)/launch/continuous_detection.launch"/>
+	<include file="$(find agv_navigation_qr)/launch/tag_map_server.launch"/>
+	<node name="qr_locate" pkg="qr_locate" type="qr_locate_node" output="screen"/>
+	<node name="autonav" pkg="agv_navigation_qr" type="autonav.py" output="screen"/>
+	<!-- 自己写的虚拟相机，零依赖，绝对不会错 -->
+	<node name="virtual_camera" pkg="agv_bringup" type="virtual_camera.py" output="screen"/>
+	<!-- 纯软件测试用：临时连接map和odom，模拟机器人在map原点 -->
+	<node pkg="tf2_ros" type="static_transform_publisher" name="test_map_odom_tf"
+		args="0 0 0 0 0 0 map odom"/>
+</launch>

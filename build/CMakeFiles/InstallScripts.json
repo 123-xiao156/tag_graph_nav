@@ -1,0 +1,18 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/iimt/dtx_ws/build/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/gtest/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/gtest/googlemock/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/gtest/googletest/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_bringup/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_navigation_qr/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_slam/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/arm_get_put/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/lifting_platform/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/qr_locate-master/qr_locate/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_camera/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_navigation/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

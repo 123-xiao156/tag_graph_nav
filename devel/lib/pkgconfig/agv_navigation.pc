@@ -1,0 +1,8 @@
+prefix=/home/iimt/dtx_ws/devel
+
+Name: agv_navigation
+Description: Description of agv_navigation
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
