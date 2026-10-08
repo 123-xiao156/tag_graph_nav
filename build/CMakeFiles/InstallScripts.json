@@ -11,6 +11,7 @@
 		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/arm_get_put/cmake_install.cmake",
 		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/lifting_platform/cmake_install.cmake",
 		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/qr_locate-master/qr_locate/cmake_install.cmake",
+		"/home/iimt/dtx_ws/build/tag_graph_nav/cmake_install.cmake",
 		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_camera/cmake_install.cmake",
 		"/home/iimt/dtx_ws/build/diff_wheel_agv-master/agv_navigation/cmake_install.cmake"
 	],

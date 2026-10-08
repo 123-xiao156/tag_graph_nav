@@ -1,0 +1,33 @@
+<launch>
+  <arg name="route_map_file"
+       default="$(find tag_graph_nav)/config/tag_route_map.json"/>
+  <arg name="target_topic" default="/target_tag_id"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+
+  <node pkg="tag_graph_nav"
+        type="tag_navigator_node"
+        name="tag_navigator"
+        output="screen"
+        required="true">
+    <param name="route_map_file" value="$(arg route_map_file)"/>
+    <param name="base_frame" value="base_link"/>
+    <param name="arrival_tolerance" value="0.10"/>
+    <param name="angle_tolerance" value="0.10"/>
+    <param name="max_linear" value="0.35"/>
+    <param name="max_angular" value="0.30"/>
+    <param name="min_linear" value="0.05"/>
+    <param name="control_rate" value="30.0"/>
+    <param name="heading_kp" value="2.0"/>
+    <param name="lateral_kp" value="1.0"/>
+    <param name="linear_kp" value="0.7"/>
+    <param name="heading_hold" value="0.35"/>
+    <param name="node_snap_distance" value="0.10"/>
+    <param name="edge_snap_distance" value="0.40"/>
+    <param name="max_tag_age" value="0.5"/>
+    <param name="max_lost_count" value="15"/>
+    <param name="navigation_timeout" value="60.0"/>
+
+    <remap from="/target_tag_id" to="$(arg target_topic)"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+  </node>
+</launch>

@@ -1,0 +1,31 @@
+{
+  "frame_id": "map",
+  "nodes": [
+    {"id": 0, "targetable": true, "tag_pose": {"x": 0.883512046, "y": -0.017596481, "yaw": -1.533464325}},
+    {"id": 1, "targetable": true, "tag_pose": {"x": 1.386348355, "y": -0.003317396, "yaw": -1.566992695}},
+    {"id": 2, "targetable": true, "tag_pose": {"x": 1.889919589, "y": -0.006802828, "yaw": -1.550798123}},
+    {"id": 3, "targetable": true, "tag_pose": {"x": 2.421652861, "y": -0.000706771, "yaw": -1.549476380}},
+    {"id": 4, "targetable": true, "tag_pose": {"x": 2.901425289, "y": 0.011261252, "yaw": -1.542216278}}
+  ],
+  "edges": [
+    {"source": 0, "destination": 1, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 1, "destination": 0, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 1, "destination": 2, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 2, "destination": 1, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 2, "destination": 3, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 3, "destination": 2, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 3, "destination": 4, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 4, "destination": 3, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"}
+  ],
+  "calibration": {
+    "generated_at": "2026-09-28T13:27:46.640473+00:00",
+    "frame_id": "map",
+    "tags": {
+      "0": {"sample_count": 30, "inlier_count": 30, "xy_rms": 0.000186272, "yaw_rms": 0.000735416},
+      "1": {"sample_count": 30, "inlier_count": 30, "xy_rms": 0.000860330, "yaw_rms": 0.000810493},
+      "2": {"sample_count": 30, "inlier_count": 30, "xy_rms": 0.001501137, "yaw_rms": 0.001590134},
+      "3": {"sample_count": 30, "inlier_count": 30, "xy_rms": 0.003107725, "yaw_rms": 0.002192465},
+      "4": {"sample_count": 30, "inlier_count": 27, "xy_rms": 0.018682599, "yaw_rms": 0.010104889}
+    }
+  }
+}

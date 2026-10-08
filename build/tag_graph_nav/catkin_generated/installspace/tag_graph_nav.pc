@@ -1,0 +1,8 @@
+prefix=/home/iimt/dtx_ws/install
+
+Name: tag_graph_nav
+Description: Description of tag_graph_nav
+Version: 0.1.0
+Cflags: -I${prefix}/include -I/usr/include/jsoncpp
+Libs: -L${prefix}/lib -ltag_route_graph -ljsoncpp
+Requires: geometry_msgs nav_msgs roscpp std_msgs tf

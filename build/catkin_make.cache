@@ -1,2 +1,2 @@
-diff_wheel_agv-master/agv_bringup:diff_wheel_agv-master/agv_camera:diff_wheel_agv-master/agv_navigation:diff_wheel_agv-master/agv_navigation_qr:diff_wheel_agv-master/agv_slam:diff_wheel_agv-master/arm_get_put:diff_wheel_agv-master/lifting_platform:diff_wheel_agv-master/qr_locate-master/qr_locate
+diff_wheel_agv-master/agv_bringup:diff_wheel_agv-master/agv_camera:diff_wheel_agv-master/agv_navigation:diff_wheel_agv-master/agv_navigation_qr:diff_wheel_agv-master/agv_slam:diff_wheel_agv-master/arm_get_put:diff_wheel_agv-master/lifting_platform:diff_wheel_agv-master/qr_locate-master/qr_locate:tag_graph_nav
 -DCATKIN_DEVEL_PREFIX=/home/iimt/dtx_ws/devel -DCMAKE_INSTALL_PREFIX=/home/iimt/dtx_ws/install -G Unix Makefiles
