@@ -13,11 +13,11 @@
 
 namespace
 {
-bool parseInt(const char *value, int *number)
+bool ParseInt(const char *value, int &number)
 {
-  if (value == nullptr || number == nullptr)
+  if (value == nullptr)
   {
-    ROS_ERROR("parseInt received a null pointer");
+    ROS_ERROR("ParseInt input pointer is null");
     return false;
   }
   char *end = nullptr;
@@ -28,15 +28,15 @@ bool parseInt(const char *value, int *number)
     ROS_ERROR("Invalid integer: %s", value);
     return false;
   }
-  *number = static_cast<int>(parsed_number);
+  number = static_cast<int>(parsed_number);
   return true;
 }
 
-bool parseDouble(const char *value, double *number)
+bool ParseDouble(const char *value, double &number)
 {
-  if (value == nullptr || number == nullptr)
+  if (value == nullptr)
   {
-    ROS_ERROR("parseDouble received a null pointer");
+    ROS_ERROR("ParseDouble input pointer is null");
     return false;
   }
   char *end = nullptr;
@@ -47,18 +47,13 @@ bool parseDouble(const char *value, double *number)
     ROS_ERROR("Invalid floating-point number: %s", value);
     return false;
   }
-  *number = parsed_number;
+  number = parsed_number;
   return true;
 }
 
-bool parseRoute(int argc, char **argv, int first_argument, std::vector<tag_graph_nav::EdgeKey> *route)
+bool ParseRoute(int argc, char *const *argv, int first_argument, std::vector<tag_graph_nav::EdgeKey> &route)
 {
-  if (route == nullptr)
-  {
-    ROS_ERROR("parseRoute output pointer is null");
-    return false;
-  }
-  route->clear();
+  route.clear();
   for (int index = first_argument; index < argc; ++index)
   {
     const std::string value(argv[index]);
@@ -70,16 +65,16 @@ bool parseRoute(int argc, char **argv, int first_argument, std::vector<tag_graph
     }
     int source = 0;
     int destination = 0;
-    if (!parseInt(value.substr(0, separator).c_str(), &source) || !parseInt(value.substr(separator + 1U).c_str(), &destination))
+    if (!ParseInt(value.substr(0, separator).c_str(), source) || !ParseInt(value.substr(separator + 1U).c_str(), destination))
     {
       return false;
     }
-    route->emplace_back(source, destination);
+    route.emplace_back(source, destination);
   }
   return true;
 }
 
-void printRoute(const std::vector<tag_graph_nav::EdgeKey> &route)
+void PrintRoute(const std::vector<tag_graph_nav::EdgeKey> &route)
 {
   for (std::size_t index = 0; index < route.size(); ++index)
   {
@@ -103,7 +98,7 @@ int main(int argc, char **argv)
   }
 
   const tag_graph_nav::TagRouteGraph graph(argv[1]);
-  if (!graph.isValid())
+  if (!graph.IsValid())
   {
     ROS_ERROR("Route graph probe cannot load the route map");
     return 2;
@@ -113,26 +108,26 @@ int main(int argc, char **argv)
 
   if (operation == "summary" && argc == 3)
   {
-    std::cout << graph.frameId() << ' ' << graph.nodes().size() << ' ' << graph.edges().size() << '\n';
+    std::cout << graph.FrameId() << ' ' << graph.Nodes().size() << ' ' << graph.Edges().size() << '\n';
     return 0;
   }
   if (operation == "shortest" && argc == 5)
   {
     int start = 0;
     int goal = 0;
-    if (!parseInt(argv[3], &start) || !parseInt(argv[4], &goal))
+    if (!ParseInt(argv[3], start) || !ParseInt(argv[4], goal))
     {
       return 2;
     }
     double cost = 0.0;
     std::vector<tag_graph_nav::EdgeKey> route;
-    if (!graph.shortestPath(start, goal, &cost, &route))
+    if (!graph.ShortestPath(start, goal, cost, route))
     {
       std::cout << "UNREACHABLE\n";
       return 0;
     }
     std::cout << cost << ' ';
-    printRoute(route);
+    PrintRoute(route);
     return 0;
   }
   if (operation == "plan" && argc == 9)
@@ -141,39 +136,39 @@ int main(int argc, char **argv)
     int goal = 0;
     double node_snap_distance = 0.0;
     double edge_snap_distance = 0.0;
-    if (!parseDouble(argv[3], &pose.x) || !parseDouble(argv[4], &pose.y) || !parseDouble(argv[5], &pose.yaw) ||
-        !parseInt(argv[6], &goal) || !parseDouble(argv[7], &node_snap_distance) || !parseDouble(argv[8], &edge_snap_distance))
+    if (!ParseDouble(argv[3], pose.x) || !ParseDouble(argv[4], pose.y) || !ParseDouble(argv[5], pose.yaw) ||
+        !ParseInt(argv[6], goal) || !ParseDouble(argv[7], node_snap_distance) || !ParseDouble(argv[8], edge_snap_distance))
     {
       return 2;
     }
     std::vector<tag_graph_nav::EdgeKey> route;
-    if (!graph.planFromPose(pose, goal, node_snap_distance, edge_snap_distance, &route))
+    if (!graph.PlanFromPose(pose, goal, node_snap_distance, edge_snap_distance, route))
     {
       std::cout << "UNREACHABLE\n";
       return 0;
     }
-    printRoute(route);
+    PrintRoute(route);
     return 0;
   }
   if (operation == "target" && argc == 4)
   {
     int tag_id = 0;
-    if (!parseInt(argv[3], &tag_id))
+    if (!ParseInt(argv[3], tag_id))
     {
       return 2;
     }
-    const tag_graph_nav::Pose2D pose = graph.tagTargetPose(tag_id);
+    const tag_graph_nav::Pose2D pose = graph.TagTargetPose(tag_id);
     std::cout << pose.x << ' ' << pose.y << ' ' << pose.yaw << '\n';
     return 0;
   }
   if (operation == "line_yaw" && argc >= 4)
   {
     std::vector<tag_graph_nav::EdgeKey> route;
-    if (!parseRoute(argc, argv, 3, &route))
+    if (!ParseRoute(argc, argv, 3, route))
     {
       return 2;
     }
-    std::cout << graph.routeLineYaw(route) << '\n';
+    std::cout << graph.RouteLineYaw(route) << '\n';
     return 0;
   }
   if (operation == "remaining" && argc == 8)
@@ -181,12 +176,12 @@ int main(int argc, char **argv)
     tag_graph_nav::Pose2D pose;
     int source = 0;
     int destination = 0;
-    if (!parseDouble(argv[3], &pose.x) || !parseDouble(argv[4], &pose.y) || !parseDouble(argv[5], &pose.yaw) ||
-        !parseInt(argv[6], &source) || !parseInt(argv[7], &destination))
+    if (!ParseDouble(argv[3], pose.x) || !ParseDouble(argv[4], pose.y) || !ParseDouble(argv[5], pose.yaw) ||
+        !ParseInt(argv[6], source) || !ParseInt(argv[7], destination))
     {
       return 2;
     }
-    const std::vector<tag_graph_nav::Pose2D> points = graph.remainingWaypoints(pose, {source, destination});
+    const std::vector<tag_graph_nav::Pose2D> points = graph.RemainingWaypoints(pose, {source, destination});
     for (std::size_t index = 0; index < points.size(); ++index)
     {
       if (index != 0U)

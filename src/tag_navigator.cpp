@@ -16,7 +16,7 @@ TagNavigator::TagNavigator()
     return;
   }
   graph_.reset(new TagRouteGraph(route_file));
-  if (!graph_->isValid())
+  if (!graph_->IsValid())
   {
     ROS_ERROR("Failed to load route map: %s", route_file.c_str());
     return;
@@ -40,7 +40,7 @@ TagNavigator::TagNavigator()
   private_nh_.param("max_lost_count", max_lost_count_, 15);
   private_nh_.param("navigation_timeout", navigation_timeout_, 60.0);
 
-  if (!validateParameters())
+  if (!ValidateParameters())
   {
     return;
   }
@@ -49,11 +49,11 @@ TagNavigator::TagNavigator()
   cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 5);
   path_pub_ = private_nh_.advertise<nav_msgs::Path>("planned_path", 1, true);
   pose_pub_ = private_nh_.advertise<geometry_msgs::PoseStamped>("estimated_pose", 1);
-  target_sub_ = nh_.subscribe("/target_tag_id", 1, &TagNavigator::targetCallback, this);
+  target_sub_ = nh_.subscribe("/target_tag_id", 1, &TagNavigator::TargetCallback, this);
   initialized_ = true;
-  ROS_INFO("Loaded %zu Tags and %zu directed edges in %s", graph_->nodes().size(), graph_->edges().size(), graph_->frameId().c_str());
+  ROS_INFO("Loaded %zu Tags and %zu directed edges in %s", graph_->Nodes().size(), graph_->Edges().size(), graph_->FrameId().c_str());
 }
-void TagNavigator::run()
+void TagNavigator::Run()
 {
   if (!initialized_)
   {
@@ -76,12 +76,12 @@ void TagNavigator::run()
     }
     if (target >= 0)
     {
-      startNavigation(target);
+      StartNavigation(target);
     }
     rate.sleep();
   }
 }
-bool TagNavigator::validateParameters() const
+bool TagNavigator::ValidateParameters() const
 {
   if (arrival_tolerance_ < 0.0 || angle_tolerance_ < 0.0 ||
       max_linear_ <= 0.0 || max_angular_ <= 0.0 || min_linear_ < 0.0 ||
@@ -94,10 +94,10 @@ bool TagNavigator::validateParameters() const
   }
   return true;
 }
-void TagNavigator::targetCallback(const std_msgs::Int32::ConstPtr &message)
+void TagNavigator::TargetCallback(const std_msgs::Int32::ConstPtr &message)
 {
-  const auto node = graph_->nodes().find(message->data);
-  if (node == graph_->nodes().end())
+  const auto node = graph_->Nodes().find(message->data);
+  if (node == graph_->Nodes().end())
   {
     ROS_WARN("Target tag_%d is not in the route map", message->data);
     return;
@@ -114,7 +114,7 @@ void TagNavigator::targetCallback(const std_msgs::Int32::ConstPtr &message)
   }
   ROS_INFO("Target tag_%d received", message->data);
 }
-bool TagNavigator::tagTransformIsFresh(const std::string &tag_frame) const
+bool TagNavigator::TagTransformIsFresh(const std::string &tag_frame) const
 {
   try
   {
@@ -131,7 +131,7 @@ bool TagNavigator::tagTransformIsFresh(const std::string &tag_frame) const
     return false;
   }
 }
-bool TagNavigator::getRobotPose(Pose2D *robot_pose)
+bool TagNavigator::GetRobotPose(Pose2D &robot_pose) const
 {
   struct Observation
   {
@@ -142,11 +142,11 @@ bool TagNavigator::getRobotPose(Pose2D *robot_pose)
   std::vector<Observation> observations;
 
   // 分别利用每个当前可见的Tag估计机器人在路网坐标系中的位姿。
-  for (const auto &item : graph_->nodes())
+  for (const auto &item : graph_->Nodes())
   {
     const int tag_id = item.first;
     const std::string tag_frame = "tag_" + std::to_string(tag_id);
-    if (!tagTransformIsFresh(tag_frame))
+    if (!TagTransformIsFresh(tag_frame))
     {
       continue;
     }
@@ -166,7 +166,7 @@ bool TagNavigator::getRobotPose(Pose2D *robot_pose)
       const Pose2D pose{
           tag_pose.x + std::cos(tag_pose.yaw) * relative_x - std::sin(tag_pose.yaw) * relative_y,
           tag_pose.y + std::sin(tag_pose.yaw) * relative_x + std::cos(tag_pose.yaw) * relative_y,
-          TagRouteGraph::angleError(tag_pose.yaw + relative_yaw, 0.0)};
+          TagRouteGraph::AngleError(tag_pose.yaw + relative_yaw, 0.0)};
       observations.push_back(Observation{std::hypot(tag_in_base.getOrigin().x(), tag_in_base.getOrigin().y()), tag_id, pose});
     }
     catch (const tf::TransformException &error)
@@ -187,39 +187,39 @@ bool TagNavigator::getRobotPose(Pose2D *robot_pose)
       {
         return std::tie(a.distance, a.tag_id) < std::tie(b.distance, b.tag_id);
       });
-  *robot_pose = best.pose;
-  pose_pub_.publish(toPoseStamped(best.pose));
+  robot_pose = best.pose;
+  pose_pub_.publish(ToPoseStamped(best.pose));
   ROS_INFO_THROTTLE(2.0, "Robot localized from tag_%d: x=%.2f y=%.2f yaw=%.2f", best.tag_id, best.pose.x, best.pose.y, best.pose.yaw);
   return true;
 }
-geometry_msgs::PoseStamped TagNavigator::toPoseStamped(const Pose2D &pose) const
+geometry_msgs::PoseStamped TagNavigator::ToPoseStamped(const Pose2D &pose) const
 {
   geometry_msgs::PoseStamped message;
-  message.header.frame_id = graph_->frameId();
+  message.header.frame_id = graph_->FrameId();
   message.header.stamp = ros::Time::now();
   message.pose.position.x = pose.x;
   message.pose.position.y = pose.y;
   message.pose.orientation = tf::createQuaternionMsgFromYaw(pose.yaw);
   return message;
 }
-void TagNavigator::publishPath(const Pose2D &robot_pose, const Pose2D &target_pose, double path_yaw)
+void TagNavigator::PublishPath(const Pose2D &robot_pose, const Pose2D &target_pose, double path_yaw) const
 {
   nav_msgs::Path path;
-  path.header.frame_id = graph_->frameId();
+  path.header.frame_id = graph_->FrameId();
   path.header.stamp = ros::Time::now();
   const double tangent_x = std::cos(path_yaw);
   const double tangent_y = std::sin(path_yaw);
   const double along = (robot_pose.x - target_pose.x) * tangent_x + (robot_pose.y - target_pose.y) * tangent_y;
   // 规划路径从机器人在线上的投影点开始，并直接连接最终目标点。
-  path.poses.push_back(toPoseStamped(Pose2D{target_pose.x + along * tangent_x, target_pose.y + along * tangent_y, path_yaw}));
-  path.poses.push_back(toPoseStamped(Pose2D{target_pose.x, target_pose.y, path_yaw}));
+  path.poses.push_back(ToPoseStamped(Pose2D{target_pose.x + along * tangent_x, target_pose.y + along * tangent_y, path_yaw}));
+  path.poses.push_back(ToPoseStamped(Pose2D{target_pose.x, target_pose.y, path_yaw}));
   path_pub_.publish(path);
 }
-void TagNavigator::stopRobot() const
+void TagNavigator::StopRobot() const
 {
   cmd_vel_pub_.publish(geometry_msgs::Twist());
 }
-bool TagNavigator::followLine(const Pose2D &target_pose, double path_yaw, const RouteEdge &route_settings, const ros::Time &started_at)
+bool TagNavigator::FollowLine(const Pose2D &target_pose, double path_yaw, const RouteEdge &route_settings, const ros::Time &started_at) const
 {
   ros::Rate rate(control_rate_);
   int lost_count = 0;
@@ -233,16 +233,16 @@ bool TagNavigator::followLine(const Pose2D &target_pose, double path_yaw, const 
     if ((ros::Time::now() - started_at).toSec() > navigation_timeout_)
     {
       ROS_ERROR("Tag route navigation timed out");
-      stopRobot();
+      StopRobot();
       return false;
     }
 
     Pose2D pose;
-    if (!getRobotPose(&pose))
+    if (!GetRobotPose(pose))
     {
       // 短时丢失定位立即停车，连续丢失超过阈值后终止本次导航。
       ++lost_count;
-      stopRobot();
+      StopRobot();
       if (lost_count > max_lost_count_)
       {
         ROS_ERROR("Lost all fresh Tag observations");
@@ -261,10 +261,10 @@ bool TagNavigator::followLine(const Pose2D &target_pose, double path_yaw, const 
     if (distance <= arrival_tolerance_)
     {
       // 到达目标位置后只校正最终朝向。
-      const double yaw_error = TagRouteGraph::angleError(body_yaw, pose.yaw);
+      const double yaw_error = TagRouteGraph::AngleError(body_yaw, pose.yaw);
       if (std::abs(yaw_error) <= angle_tolerance_)
       {
-        stopRobot();
+        StopRobot();
         return true;
       }
       angular_command = heading_kp_ * yaw_error;
@@ -272,7 +272,7 @@ bool TagNavigator::followLine(const Pose2D &target_pose, double path_yaw, const 
     else
     {
       // 航向误差和横向误差共同生成角速度；朝向偏差过大时不输出线速度。
-      const double heading_error = TagRouteGraph::angleError(body_yaw, pose.yaw);
+      const double heading_error = TagRouteGraph::AngleError(body_yaw, pose.yaw);
       const double lateral_error = -std::sin(path_yaw) * (pose.x - target_pose.x) + std::cos(path_yaw) * (pose.y - target_pose.y);
       angular_command = heading_kp_ * heading_error - lateral_kp_ * lateral_error;
       if (std::abs(heading_error) <= heading_hold_)
@@ -288,10 +288,10 @@ bool TagNavigator::followLine(const Pose2D &target_pose, double path_yaw, const 
     ROS_INFO_THROTTLE(1.0, "Line tracking: distance=%.3f v=%.3f w=%.3f", distance, command.linear.x, command.angular.z);
     rate.sleep();
   }
-  stopRobot();
+  StopRobot();
   return false;
 }
-void TagNavigator::startNavigation(int target_id)
+void TagNavigator::StartNavigation(int target_id)
 {
   // 原子置位可防止同一时刻启动多个导航任务。
   if (navigating_.exchange(true))
@@ -302,7 +302,7 @@ void TagNavigator::startNavigation(int target_id)
   const ros::Time started_at = ros::Time::now();
   bool success = false;
   Pose2D robot_pose;
-  if (!getRobotPose(&robot_pose))
+  if (!GetRobotPose(robot_pose))
   {
     ROS_ERROR("No fresh visible Tag for initial localization");
   }
@@ -310,7 +310,7 @@ void TagNavigator::startNavigation(int target_id)
   {
     // 将机器人当前位置匹配到有向路网，并规划到目标Tag的边序列。
     std::vector<EdgeKey> route;
-    if (!graph_->planFromPose(robot_pose, target_id, node_snap_distance_, edge_snap_distance_, &route))
+    if (!graph_->PlanFromPose(robot_pose, target_id, node_snap_distance_, edge_snap_distance_, route))
     {
       ROS_ERROR("No directed path to tag_%d from current position", target_id);
     }
@@ -327,7 +327,7 @@ void TagNavigator::startNavigation(int target_id)
       }
       ROS_INFO("Directed route: %s", route.empty() ? "at target node" : route_text.str().c_str());
 
-      const Pose2D target_pose = graph_->tagTargetPose(target_id);
+      const Pose2D target_pose = graph_->TagTargetPose(target_id);
       double path_yaw = target_pose.yaw;
       RouteEdge route_settings;
       route_settings.motion = "forward";
@@ -340,7 +340,7 @@ void TagNavigator::startNavigation(int target_id)
         double minimum_speed = std::numeric_limits<double>::infinity();
         for (const EdgeKey &key : route)
         {
-          const RouteEdge &edge = graph_->edges().at(key);
+          const RouteEdge &edge = graph_->Edges().at(key);
           motions.insert(edge.motion);
           minimum_speed = std::min(minimum_speed, edge.speed_limit);
         }
@@ -351,21 +351,21 @@ void TagNavigator::startNavigation(int target_id)
         }
         else
         {
-          path_yaw = graph_->routeLineYaw(route);
-          route_settings.motion = graph_->edges().at(route.front()).motion;
+          path_yaw = graph_->RouteLineYaw(route);
+          route_settings.motion = graph_->Edges().at(route.front()).motion;
           route_settings.speed_limit = minimum_speed;
         }
       }
       if (route_settings_valid)
       {
-        publishPath(robot_pose, target_pose, path_yaw);
-        success = followLine(target_pose, path_yaw, route_settings, started_at);
+        PublishPath(robot_pose, target_pose, path_yaw);
+        success = FollowLine(target_pose, path_yaw, route_settings, started_at);
       }
     }
   }
 
   navigating_ = false;
-  stopRobot();
+  StopRobot();
   ROS_INFO("Navigation %s: tag_%d", success ? "finished" : "failed", target_id);
 }
 } // namespace tag_graph_nav
