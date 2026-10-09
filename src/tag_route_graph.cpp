@@ -1,16 +1,4 @@
-#include "tag_graph_nav/tag_route_graph.hpp"
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <functional>
-#include <limits>
-#include <queue>
-#include <sstream>
-#include <tuple>
-
-#include <json/json.h>
-#include <ros/ros.h>
+#include "tag_graph_nav/tag_route_graph.h"
 
 namespace tag_graph_nav
 {
@@ -87,6 +75,7 @@ double distance2D(const Pose2D &a, const Pose2D &b)
 
 TagRouteGraph::TagRouteGraph(const std::string &route_file)
 {
+  // 读取并解析路网JSON；任一必需字段无效时保持valid_为false。
   std::ifstream stream(route_file);
   if (!stream)
   {
@@ -111,6 +100,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
   }
   frame_id_ = frame->asString();
 
+  // 先加载节点，后续解析边时即可校验端点是否存在。
   const Json::Value *node_array = requiredMember(data, "nodes", "route graph");
   if (node_array == nullptr || !node_array->isArray())
   {
@@ -155,6 +145,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     return;
   }
 
+  // 边按照JSON中的顺序保存，保证候选路径选择具有确定性。
   const Json::Value *edge_array = requiredMember(data, "edges", "route graph");
   if (edge_array == nullptr || !edge_array->isArray())
   {
@@ -236,8 +227,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     return std::atan2(std::sin(a - b), std::cos(a - b));
   }
 
-  bool TagRouteGraph::shortestPath(int start, int goal, double *total_cost,
-                                   std::vector<EdgeKey> *route) const
+  bool TagRouteGraph::shortestPath(int start, int goal, double *total_cost, std::vector<EdgeKey> *route) const
   {
     if (total_cost == nullptr || route == nullptr)
     {
@@ -258,14 +248,13 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     }
 
     using QueueItem = std::pair<double, int>;
-    std::priority_queue<QueueItem, std::vector<QueueItem>,
-                        std::greater<QueueItem>>
-        queue;
+    std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<QueueItem>> queue;
     std::map<int, double> distance;
     std::map<int, EdgeKey> previous;
     distance[start] = 0.0;
     queue.push({0.0, start});
 
+    // 使用Dijkstra算法搜索总代价最小的有向路径。
     while (!queue.empty())
     {
       const double current_cost = queue.top().first;
@@ -346,6 +335,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
       points.push_back(node->second.tag_pose);
     }
 
+    // 计算所有路线节点的中心，用二维主方向拟合一条全局直线。
     double mean_x = 0.0;
     double mean_y = 0.0;
     for (const Pose2D &point : points)
@@ -374,9 +364,8 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     double yaw = 0.5 * std::atan2(2.0 * xy, xx - yy);
     const Pose2D &start = points.front();
     const Pose2D &goal = points.back();
-    if (std::cos(yaw) * (goal.x - start.x) +
-            std::sin(yaw) * (goal.y - start.y) <
-        0.0)
+    // 主方向本身没有正反，按路线起点到终点的方向消除二义性。
+    if (std::cos(yaw) * (goal.x - start.x) + std::sin(yaw) * (goal.y - start.y) < 0.0)
     {
       yaw += M_PI;
     }
@@ -400,8 +389,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     return points;
   }
 
-  std::pair<double, double> TagRouteGraph::segmentProjection(
-      const Pose2D &point, const Pose2D &start, const Pose2D &end)
+  std::pair<double, double> TagRouteGraph::segmentProjection(const Pose2D &point, const Pose2D &start, const Pose2D &end)
   {
     const double dx = end.x - start.x;
     const double dy = end.y - start.y;
@@ -411,18 +399,15 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
       ROS_ERROR("Directed edge segment has zero geometric length");
       return {std::numeric_limits<double>::infinity(), 0.0};
     }
-    const double raw_fraction =
-        ((point.x - start.x) * dx + (point.y - start.y) * dy) /
-        length_squared;
+    const double raw_fraction = ((point.x - start.x) * dx + (point.y - start.y) * dy) / length_squared;
+    // 将投影比例限制在线段范围内，而不是使用无限延长线。
     const double fraction = std::max(0.0, std::min(1.0, raw_fraction));
     const double projection_x = start.x + fraction * dx;
     const double projection_y = start.y + fraction * dy;
-    return {std::hypot(point.x - projection_x, point.y - projection_y),
-            fraction};
+    return {std::hypot(point.x - projection_x, point.y - projection_y), fraction};
   }
 
-  EdgeProjection TagRouteGraph::projectToEdge(const Pose2D &point,
-                                              const EdgeKey &key) const
+  EdgeProjection TagRouteGraph::projectToEdge(const Pose2D &point, const EdgeKey &key) const
   {
     const std::vector<Pose2D> points = edgePoints(key);
     if (points.size() < 2U)
@@ -447,16 +432,13 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
 
     EdgeProjection best{std::numeric_limits<double>::infinity(), 0.0, 0U};
     double traveled = 0.0;
+    // 遍历折线的每一段，保留横向距离最小的投影及其全边进度。
     for (std::size_t index = 0; index < lengths.size(); ++index)
     {
       if (lengths[index] > 0.0)
       {
-        const auto projection =
-            segmentProjection(point, points[index], points[index + 1U]);
-        const EdgeProjection candidate{
-            projection.first,
-            (traveled + projection.second * lengths[index]) / total_length,
-            index};
+        const auto projection = segmentProjection(point, points[index], points[index + 1U]);
+        const EdgeProjection candidate{projection.first, (traveled + projection.second * lengths[index]) / total_length, index};
         if (candidate.distance < best.distance)
         {
           best = candidate;
@@ -467,8 +449,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     return best;
   }
 
-  TagRouteGraph::StartExtension TagRouteGraph::projectToStartExtension(
-      const Pose2D &point, const EdgeKey &key) const
+  TagRouteGraph::StartExtension TagRouteGraph::projectToStartExtension(const Pose2D &point, const EdgeKey &key) const
   {
     const std::vector<Pose2D> points = edgePoints(key);
     if (points.size() < 2U)
@@ -477,6 +458,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
       return StartExtension{};
     }
     const Pose2D &start = points.front();
+    // 只检查机器人是否位于边起点之前，位于边内部的情况由projectToEdge处理。
     for (std::size_t index = 1; index < points.size(); ++index)
     {
       const double dx = points[index].x - start.x;
@@ -486,9 +468,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
       {
         continue;
       }
-      const double fraction =
-          ((point.x - start.x) * dx + (point.y - start.y) * dy) /
-          length_squared;
+      const double fraction = ((point.x - start.x) * dx + (point.y - start.y) * dy) / length_squared;
       if (fraction >= 0.0)
       {
         return StartExtension{};
@@ -504,8 +484,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     return StartExtension{};
   }
 
-  std::vector<Pose2D> TagRouteGraph::remainingWaypoints(
-      const Pose2D &point, const EdgeKey &key) const
+  std::vector<Pose2D> TagRouteGraph::remainingWaypoints(const Pose2D &point, const EdgeKey &key) const
   {
     const std::vector<Pose2D> points = edgePoints(key);
     if (points.size() < 2U)
@@ -521,14 +500,10 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     {
       return {};
     }
-    return std::vector<Pose2D>(
-        points.begin() + static_cast<std::ptrdiff_t>(projection.segment_index + 1U),
-        points.end());
+    return std::vector<Pose2D>(points.begin() + static_cast<std::ptrdiff_t>(projection.segment_index + 1U), points.end());
   }
 
-  bool TagRouteGraph::planFromPose(const Pose2D &pose, int goal,
-                                   double node_snap_distance,
-                                   double edge_snap_distance,
+  bool TagRouteGraph::planFromPose(const Pose2D &pose, int goal, double node_snap_distance, double edge_snap_distance,
                                    std::vector<EdgeKey> *route) const
   {
     if (route == nullptr)
@@ -567,6 +542,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     }
     if (nearest_node_distance <= node_snap_distance)
     {
+      // 足够接近节点时直接以该节点作为最短路起点。
       double cost = 0.0;
       return shortestPath(nearest_node, goal, &cost, route);
     }
@@ -589,6 +565,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
     std::vector<Candidate> interior_candidates;
     std::vector<ExtensionCandidate> extension_candidates;
 
+    // 同时收集边内部投影和边起点延长线上的可行入口。
     for (const EdgeKey &key : edge_order_)
     {
       const RouteEdge &edge = edges_.at(key);
@@ -599,10 +576,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
         std::vector<EdgeKey> rest;
         if (shortestPath(key.second, goal, &rest_cost, &rest))
         {
-          Candidate candidate{projection.distance,
-                              (1.0 - projection.fraction) * edge.cost,
-                              key,
-                              rest};
+          Candidate candidate{projection.distance, (1.0 - projection.fraction) * edge.cost, key, rest};
           candidates.push_back(candidate);
           if (projection.fraction > 0.0 && projection.fraction < 1.0)
           {
@@ -616,23 +590,22 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
       {
         double route_cost = 0.0;
         std::vector<EdgeKey> extension_route;
-        if (shortestPath(key.first, goal, &route_cost, &extension_route) &&
-            (extension_route.empty() || extension_route.front() == key))
+        if (shortestPath(key.first, goal, &route_cost, &extension_route) && (extension_route.empty() || extension_route.front() == key))
         {
-          extension_candidates.push_back(
-              ExtensionCandidate{extension.lateral_distance,
-                                 extension.source_distance, route_cost,
-                                 std::move(extension_route)});
+          extension_candidates.push_back(ExtensionCandidate{
+              extension.lateral_distance, extension.source_distance, route_cost, std::move(extension_route)});
         }
       }
     }
 
     if (!interior_candidates.empty())
     {
+      // 内部投影比端点投影更能确定机器人当前所在的边。
       candidates = interior_candidates;
     }
     else if (!extension_candidates.empty())
     {
+      // 起点延长线候选先比较横向距离，再比较到源点距离和路线代价。
       const double nearest_lateral = std::min_element(
                                          extension_candidates.begin(), extension_candidates.end(),
                                          [](const ExtensionCandidate &a, const ExtensionCandidate &b)
@@ -642,8 +615,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
                                          ->lateral_distance;
       const auto best = std::min_element(
           extension_candidates.begin(), extension_candidates.end(),
-          [nearest_lateral](const ExtensionCandidate &a,
-                            const ExtensionCandidate &b)
+          [nearest_lateral](const ExtensionCandidate &a, const ExtensionCandidate &b)
           {
             const bool a_allowed = a.lateral_distance <= nearest_lateral + 0.02;
             const bool b_allowed = b.lateral_distance <= nearest_lateral + 0.02;
@@ -651,8 +623,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
             {
               return a_allowed;
             }
-            return std::tie(a.source_distance, a.route_cost) <
-                   std::tie(b.source_distance, b.route_cost);
+            return std::tie(a.source_distance, a.route_cost) < std::tie(b.source_distance, b.route_cost);
           });
       *route = best->route;
       return true;
@@ -673,6 +644,7 @@ TagRouteGraph::TagRouteGraph(const std::string &route_file)
 
     const Candidate *best = nullptr;
     double best_cost = std::numeric_limits<double>::infinity();
+    // 在横向距离近似相同的候选中选择剩余总代价最小的路线。
     for (const Candidate &candidate : candidates)
     {
       if (candidate.lateral_distance > nearest_lateral + 0.02)

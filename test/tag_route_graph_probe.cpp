@@ -1,4 +1,4 @@
-#include "tag_graph_nav/tag_route_graph.hpp"
+#include "tag_graph_nav/tag_route_graph.h"
 
 #include <ros/ros.h>
 

@@ -1,11 +1,22 @@
 #ifndef TAG_GRAPH_NAV_TAG_ROUTE_GRAPH_H
 #define TAG_GRAPH_NAV_TAG_ROUTE_GRAPH_H
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <fstream>
+#include <functional>
+#include <limits>
 #include <map>
+#include <queue>
+#include <sstream>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
+
+#include <json/json.h>
+#include <ros/ros.h>
 
 namespace tag_graph_nav
 {

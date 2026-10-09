@@ -1,17 +1,28 @@
 #ifndef TAG_GRAPH_NAV_TAG_NAVIGATOR_H
 #define TAG_GRAPH_NAV_TAG_NAVIGATOR_H
 
+#include <algorithm>
 #include <atomic>
+#include <cmath>
+#include <cstddef>
+#include <limits>
 #include <memory>
 #include <mutex>
+#include <set>
+#include <sstream>
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Path.h>
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
+#include <tf/transform_datatypes.h>
 #include <tf/transform_listener.h>
 
-#include "tag_graph_nav/tag_route_graph.hpp"
+#include "tag_graph_nav/tag_route_graph.h"
 
 namespace tag_graph_nav
 {
@@ -26,13 +37,6 @@ public:
    * Return:    无
    **********************************************************************/
   TagNavigator();
-  /**********************************************************************
-   * Description: 析构导航器并发布零速度
-   * Input:     无
-   * Output:    无
-   * Return:    无
-   **********************************************************************/
-  ~TagNavigator();
   /**********************************************************************
    * Description: 判断导航参数、路网和ROS通信接口是否初始化成功
    * Input:     无
@@ -117,14 +121,6 @@ private:
    * Return:    无
    **********************************************************************/
   void startNavigation(int target_id);
-  /**********************************************************************
-   * Description: 停止当前导航并发布零速度
-   * Input:     无
-   * Output:    无
-   * Return:    无
-   **********************************************************************/
-  void shutdown();
-
 private:
   bool initialized_{false};                // 导航器是否初始化成功
   ros::NodeHandle nh_;
