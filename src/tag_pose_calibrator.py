@@ -166,17 +166,23 @@ def update_route_map(template, estimates, generated_at,
             }
         if node["id"] in localization_only_ids:
             node["targetable"] = False
+
+    calibration_tags = {}
+    existing_calibration = result.get("calibration")
+    if isinstance(existing_calibration, dict):
+        existing_tags = existing_calibration.get("tags")
+        if isinstance(existing_tags, dict):
+            calibration_tags = copy.deepcopy(existing_tags)
+    for tag_id, estimate in sorted(estimates.items()):
+        calibration_tags[str(tag_id)] = {
+            key: (int(estimate[key]) if key.endswith("count")
+                  else round(float(estimate[key]), 9))
+            for key in ("sample_count", "inlier_count", "xy_rms", "yaw_rms")
+        }
     result["calibration"] = {
         "generated_at": generated_at,
         "frame_id": result["frame_id"],
-        "tags": {
-            str(tag_id): {
-                key: (int(estimate[key]) if key.endswith("count")
-                      else round(float(estimate[key]), 9))
-                for key in ("sample_count", "inlier_count", "xy_rms", "yaw_rms")
-            }
-            for tag_id, estimate in sorted(estimates.items())
-        },
+        "tags": calibration_tags,
     }
     return result
 
@@ -259,6 +265,7 @@ class TagPoseCalibrator:
         self.tf_listener = tf.TransformListener()
         self.samples = {tag_id: [] for tag_id in self.tag_ids}
         self.last_stamp = {}
+        self.output_written = False
 
     def _tag_frame(self, tag_id):
         """根据配置格式生成 Tag TF 名称。"""
@@ -303,50 +310,44 @@ class TagPoseCalibrator:
             (tag_id, len(self.samples[tag_id]), self.samples_per_tag)
             for tag_id in self.tag_ids)
 
-    def _build_estimates(self):
-        """对所有已完成采集的 Tag 计算稳健位姿。"""
-        estimates = {
-            tag_id: robust_pose_estimate(
-                self.samples[tag_id], self.position_floor,
-                self.yaw_floor, self.mad_scale)
-            for tag_id in self.tag_ids
-        }
-        poor_quality = [
-            "tag_%d(xy_rms=%.4f,yaw_rms=%.4f)" %
-            (tag_id, estimate["xy_rms"], estimate["yaw_rms"])
-            for tag_id, estimate in sorted(estimates.items())
-            if (estimate["xy_rms"] > self.max_xy_rms or
-                estimate["yaw_rms"] > self.max_yaw_rms)
-        ]
-        if poor_quality:
+    def _build_estimate(self, tag_id):
+        """计算一个 Tag 的稳健位姿，并检查标定质量。"""
+        estimate = robust_pose_estimate(
+            self.samples[tag_id], self.position_floor,
+            self.yaw_floor, self.mad_scale)
+        if (estimate["xy_rms"] > self.max_xy_rms or
+                estimate["yaw_rms"] > self.max_yaw_rms):
             raise ValueError(
-                "calibration result is too noisy; no file was written: %s" %
-                ", ".join(poor_quality))
-        return estimates
+                "tag_%d(xy_rms=%.4f,yaw_rms=%.4f) exceeds limits "
+                "(xy=%.4f,yaw=%.4f)" %
+                (tag_id, estimate["xy_rms"], estimate["yaw_rms"],
+                 self.max_xy_rms, self.max_yaw_rms))
+        return estimate
 
-    def save(self):
-        """计算标定结果并安全写入目标路网 JSON。"""
-        estimates = self._build_estimates()
+    def save(self, tag_id, estimate):
+        """原子写入一个已通过质量检查的 Tag，并保留此前结果。"""
         generated_at = datetime.datetime.now(
             datetime.timezone.utc).isoformat()
         output = update_route_map(
-            self.template, estimates, generated_at,
+            self.template, {tag_id: estimate}, generated_at,
             LOCALIZATION_ONLY_TAG_IDS)
-        backup_path = atomic_write_route_map(output, self.output_file)
-        for tag_id, estimate in sorted(estimates.items()):
-            pose = estimate["pose"]
-            rospy.loginfo(
-                "tag_%d calibrated: x=%.4f y=%.4f yaw=%.4f, "
-                "inliers=%d/%d xy_rms=%.4f yaw_rms=%.4f",
-                tag_id, pose["x"], pose["y"], pose["yaw"],
-                estimate["inlier_count"], estimate["sample_count"],
-                estimate["xy_rms"], estimate["yaw_rms"])
+        backup_path = atomic_write_route_map(
+            output, self.output_file, make_backup=not self.output_written)
+        self.template = output
+        self.output_written = True
+
+        pose = estimate["pose"]
+        rospy.loginfo(
+            "tag_%d calibrated and saved: x=%.4f y=%.4f yaw=%.4f, "
+            "inliers=%d/%d xy_rms=%.4f yaw_rms=%.4f",
+            tag_id, pose["x"], pose["y"], pose["yaw"],
+            estimate["inlier_count"], estimate["sample_count"],
+            estimate["xy_rms"], estimate["yaw_rms"])
         if backup_path:
             rospy.loginfo("Previous route map backed up to %s", backup_path)
-        rospy.loginfo("Calibrated route map written to %s", self.output_file)
 
     def run(self):
-        """循环采集各 Tag；全部完成后自动保存并退出。"""
+        """逐个采集、验收并保存 Tag；只重新采集不合格的 Tag。"""
         rospy.loginfo(
             "Collecting %d fresh samples for Tag IDs %s in frame %s",
             self.samples_per_tag, self.tag_ids, self.map_frame)
@@ -363,11 +364,23 @@ class TagPoseCalibrator:
                         "Accepted tag_%d sample %d/%d: x=%.3f y=%.3f yaw=%.3f",
                         tag_id, len(self.samples[tag_id]),
                         self.samples_per_tag, *sample)
+                    if len(self.samples[tag_id]) >= self.samples_per_tag:
+                        try:
+                            estimate = self._build_estimate(tag_id)
+                        except ValueError as exc:
+                            rospy.logwarn(
+                                "Tag %d calibration rejected; only this Tag "
+                                "will be collected again: %s", tag_id, exc)
+                            self.samples[tag_id] = []
+                        else:
+                            self.save(tag_id, estimate)
             rospy.loginfo_throttle(5.0, "Calibration progress: %s",
                                    self._status_text())
             if all(len(samples) >= self.samples_per_tag
                    for samples in self.samples.values()):
-                self.save()
+                rospy.loginfo(
+                    "All Tag poses passed quality checks and were written to %s",
+                    self.output_file)
                 return
             rate.sleep()
 

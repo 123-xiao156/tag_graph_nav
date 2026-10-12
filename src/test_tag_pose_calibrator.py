@@ -72,6 +72,38 @@ class TagPoseCalibrationTest(unittest.TestCase):
             "targetable": False,
         })
 
+    def test_update_route_map_preserves_previous_calibration_statistics(self):
+        template = {
+            "frame_id": "map",
+            "nodes": [
+                {"id": 0, "tag_pose": {"x": 0, "y": 0, "yaw": 0}},
+                {"id": 1, "tag_pose": {"x": None, "y": None, "yaw": None}},
+            ],
+            "edges": [],
+            "calibration": {
+                "generated_at": "old",
+                "frame_id": "map",
+                "tags": {
+                    "0": {
+                        "sample_count": 30, "inlier_count": 30,
+                        "xy_rms": 0.01, "yaw_rms": 0.02,
+                    }
+                },
+            },
+        }
+        estimates = {
+            1: {
+                "pose": {"x": 1.0, "y": 2.0, "yaw": 0.3},
+                "sample_count": 30, "inlier_count": 29,
+                "xy_rms": 0.02, "yaw_rms": 0.03,
+            }
+        }
+        result = update_route_map(template, estimates, "new")
+        self.assertEqual(set(result["calibration"]["tags"]), {"0", "1"})
+        self.assertEqual(result["calibration"]["tags"]["0"],
+                         template["calibration"]["tags"]["0"])
+        self.assertEqual(result["calibration"]["generated_at"], "new")
+
     def test_atomic_write_creates_backup(self):
         with tempfile.TemporaryDirectory() as directory:
             path = os.path.join(directory, "tag_route_map.json")
