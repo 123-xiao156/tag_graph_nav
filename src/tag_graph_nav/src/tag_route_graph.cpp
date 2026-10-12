@@ -83,6 +83,48 @@ namespace tag_graph_nav
       return std::hypot(a.x - b.x, a.y - b.y);
     }
 
+    /**********************************************************************
+     * Description: 获取折线中第一条非零长度线段的偏航角
+     * Input:     points：按照行驶顺序排列的折线点
+     * Output:    yaw：第一条有效线段从起点指向终点的偏航角
+     * Return:    找到非零长度线段时返回true，否则返回false
+     **********************************************************************/
+    bool FirstSegmentYaw(const std::vector<Pose2D> &points, double &yaw)
+    {
+      for (std::size_t index = 0; index + 1U < points.size(); ++index)
+      {
+        const double dx = points[index + 1U].x - points[index].x;
+        const double dy = points[index + 1U].y - points[index].y;
+        if (std::hypot(dx, dy) > 1e-12)
+        {
+          yaw = std::atan2(dy, dx);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    /**********************************************************************
+     * Description: 获取折线中最后一条非零长度线段的偏航角
+     * Input:     points：按照行驶顺序排列的折线点
+     * Output:    yaw：最后一条有效线段从起点指向终点的偏航角
+     * Return:    找到非零长度线段时返回true，否则返回false
+     **********************************************************************/
+    bool LastSegmentYaw(const std::vector<Pose2D> &points, double &yaw)
+    {
+      for (std::size_t index = points.size(); index > 1U; --index)
+      {
+        const double dx = points[index - 1U].x - points[index - 2U].x;
+        const double dy = points[index - 1U].y - points[index - 2U].y;
+        if (std::hypot(dx, dy) > 1e-12)
+        {
+          yaw = std::atan2(dy, dx);
+          return true;
+        }
+      }
+      return false;
+    }
+
   } // namespace
 
   double TagRouteGraph::AngleError(double a, double b)
@@ -375,6 +417,70 @@ namespace tag_graph_nav
       yaw += M_PI;
     }
     return AngleError(yaw, 0.0);
+  }
+
+  bool TagRouteGraph::SplitRouteAtTurns(const std::vector<EdgeKey> &route, double turn_angle_threshold,
+                                        std::vector<std::vector<EdgeKey>> &sections) const
+  {
+    sections.clear();
+    if (!valid_)
+    {
+      ROS_ERROR("Cannot split an invalid route graph");
+      return false;
+    }
+    if (!std::isfinite(turn_angle_threshold) || turn_angle_threshold < 0.0 || turn_angle_threshold > M_PI)
+    {
+      ROS_ERROR("turn_angle_threshold must be within [0, pi]");
+      return false;
+    }
+    if (route.empty())
+    {
+      return true;
+    }
+    for (const EdgeKey &key : route)
+    {
+      if (edges_.count(key) == 0U)
+      {
+        ROS_ERROR("Directed edge %s is absent from graph", EdgeName(key).c_str());
+        return false;
+      }
+    }
+
+    sections.push_back({route.front()});
+    for (std::size_t index = 1; index < route.size(); ++index)
+    {
+      const EdgeKey &previous_key = route[index - 1U];
+      const EdgeKey &current_key = route[index];
+      if (previous_key.second != current_key.first)
+      {
+        ROS_ERROR("Route edges %s and %s are not continuous", EdgeName(previous_key).c_str(), EdgeName(current_key).c_str());
+        sections.clear();
+        return false;
+      }
+
+      const RouteEdge &previous_edge = edges_.at(previous_key);
+      const RouteEdge &current_edge = edges_.at(current_key);
+      double incoming_yaw = 0.0;
+      double outgoing_yaw = 0.0;
+      if (!LastSegmentYaw(EdgePoints(previous_key), incoming_yaw) ||
+          !FirstSegmentYaw(EdgePoints(current_key), outgoing_yaw))
+      {
+        ROS_ERROR("Cannot determine route direction at tag_%d", previous_key.second);
+        sections.clear();
+        return false;
+      }
+
+      const double turn_angle = std::abs(AngleError(outgoing_yaw, incoming_yaw));
+      if (turn_angle > turn_angle_threshold || previous_edge.motion != current_edge.motion)
+      {
+        sections.push_back({current_key});
+      }
+      else
+      {
+        sections.back().push_back(current_key);
+      }
+    }
+    return true;
   }
 
   std::vector<Pose2D> TagRouteGraph::EdgePoints(const EdgeKey &key) const

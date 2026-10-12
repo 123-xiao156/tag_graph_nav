@@ -32,6 +32,36 @@ def route_map(tmp_path):
     return path
 
 
+@pytest.fixture()
+def turning_route_map(tmp_path):
+    path = tmp_path / "turning_route_map.json"
+    positions = [
+        (0.0, 0.0),
+        (1.0, 0.0),
+        (2.0, 0.0),
+        (2.0, 1.0),
+        (3.0, 1.0),
+        (4.0, 1.0),
+    ]
+    nodes = ",\n".join(
+        '{"id": %d, "tag_pose": {"x": %.1f, "y": %.1f, "yaw": 0.0}}'
+        % (tag_id, x, y)
+        for tag_id, (x, y) in enumerate(positions)
+    )
+    edges = ",\n".join(
+        '{"source": %d, "destination": %d, "cost": 1.0, '
+        '"speed_limit": 0.25, "motion": "forward"}'
+        % (tag_id, tag_id + 1)
+        for tag_id in range(len(positions) - 1)
+    )
+    path.write_text(
+        '{"frame_id": "map", "nodes": [%s], "edges": [%s]}'
+        % (nodes, edges),
+        encoding="utf-8",
+    )
+    return path
+
+
 def run_probe(route_map, *arguments, check=True):
     executable = os.environ["TAG_ROUTE_GRAPH_PROBE"]
     return subprocess.run(
@@ -115,6 +145,21 @@ def test_route_line_uses_all_nodes_and_preserves_direction(route_map):
 
     assert forward == pytest.approx(math.pi / 2)
     assert abs(reverse) == pytest.approx(math.pi / 2)
+
+
+def test_route_sections_pass_straight_tags_and_stop_at_turns(
+        route_map, turning_route_map):
+    straight = run_probe(
+        route_map, "sections", math.radians(15),
+        "0:1", "1:2", "2:3", "3:4"
+    ).stdout.strip()
+    turning = run_probe(
+        turning_route_map, "sections", math.radians(15),
+        "0:1", "1:2", "2:3", "3:4", "4:5"
+    ).stdout.strip()
+
+    assert straight == "0:1,1:2,2:3,3:4"
+    assert turning == "0:1,1:2|2:3|3:4,4:5"
 
 
 def test_invalid_input_reports_ros_error_without_exception(route_map, tmp_path):

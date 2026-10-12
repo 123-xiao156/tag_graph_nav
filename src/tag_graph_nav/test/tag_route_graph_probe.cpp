@@ -86,6 +86,27 @@ void PrintRoute(const std::vector<tag_graph_nav::EdgeKey> &route)
   }
   std::cout << '\n';
 }
+
+void PrintSections(const std::vector<std::vector<tag_graph_nav::EdgeKey>> &sections)
+{
+  for (std::size_t section_index = 0; section_index < sections.size(); ++section_index)
+  {
+    if (section_index != 0U)
+    {
+      std::cout << '|';
+    }
+    const std::vector<tag_graph_nav::EdgeKey> &section = sections[section_index];
+    for (std::size_t edge_index = 0; edge_index < section.size(); ++edge_index)
+    {
+      if (edge_index != 0U)
+      {
+        std::cout << ',';
+      }
+      std::cout << section[edge_index].first << ':' << section[edge_index].second;
+    }
+  }
+  std::cout << '\n';
+}
 } // namespace
 
 int main(int argc, char **argv)
@@ -169,6 +190,22 @@ int main(int argc, char **argv)
       return 2;
     }
     std::cout << graph.RouteLineYaw(route) << '\n';
+    return 0;
+  }
+  if (operation == "sections" && argc >= 5)
+  {
+    double turn_angle_threshold = 0.0;
+    std::vector<tag_graph_nav::EdgeKey> route;
+    if (!ParseDouble(argv[3], turn_angle_threshold) || !ParseRoute(argc, argv, 4, route))
+    {
+      return 2;
+    }
+    std::vector<std::vector<tag_graph_nav::EdgeKey>> sections;
+    if (!graph.SplitRouteAtTurns(route, turn_angle_threshold, sections))
+    {
+      return 2;
+    }
+    PrintSections(sections);
     return 0;
   }
   if (operation == "remaining" && argc == 8)

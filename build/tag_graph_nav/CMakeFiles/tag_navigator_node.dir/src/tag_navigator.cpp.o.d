@@ -1,8 +1,8 @@
 tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /home/iimt/dtx_ws/src/tag_graph_nav/src/tag_navigator.cpp \
  /usr/include/stdc-predef.h \
- /home/iimt/dtx_ws/src/tag_graph_nav/include/tag_graph_nav/tag_navigator.hpp \
- /usr/include/c++/9/atomic /usr/include/c++/9/bits/atomic_base.h \
+ /home/iimt/dtx_ws/src/tag_graph_nav/include/tag_graph_nav/tag_navigator.h \
+ /usr/include/c++/9/algorithm /usr/include/c++/9/utility \
  /usr/include/x86_64-linux-gnu/c++/9/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -11,96 +11,124 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/cpu_defines.h \
- /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/timesize.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h \
- /usr/include/x86_64-linux-gnu/bits/time64.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /usr/include/c++/9/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/9/bits/stl_relops.h /usr/include/c++/9/bits/stl_pair.h \
  /usr/include/c++/9/bits/move.h /usr/include/c++/9/bits/concept_check.h \
- /usr/include/c++/9/type_traits /usr/include/c++/9/memory \
+ /usr/include/c++/9/type_traits /usr/include/c++/9/initializer_list \
  /usr/include/c++/9/bits/stl_algobase.h \
  /usr/include/c++/9/bits/functexcept.h \
  /usr/include/c++/9/bits/exception_defines.h \
  /usr/include/c++/9/bits/cpp_type_traits.h \
  /usr/include/c++/9/ext/type_traits.h \
  /usr/include/c++/9/ext/numeric_traits.h \
- /usr/include/c++/9/bits/stl_pair.h \
  /usr/include/c++/9/bits/stl_iterator_base_types.h \
  /usr/include/c++/9/bits/stl_iterator_base_funcs.h \
  /usr/include/c++/9/debug/assertions.h \
  /usr/include/c++/9/bits/stl_iterator.h \
  /usr/include/c++/9/bits/ptr_traits.h /usr/include/c++/9/debug/debug.h \
  /usr/include/c++/9/bits/predefined_ops.h \
- /usr/include/c++/9/bits/allocator.h \
- /usr/include/x86_64-linux-gnu/c++/9/bits/c++allocator.h \
- /usr/include/c++/9/ext/new_allocator.h /usr/include/c++/9/new \
+ /usr/include/c++/9/bits/stl_algo.h /usr/include/c++/9/cstdlib \
+ /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn.h \
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/x86_64-linux-gnu/sys/types.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/timesize.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-intn.h /usr/include/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endian.h \
+ /usr/include/x86_64-linux-gnu/bits/endianness.h \
+ /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+ /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+ /usr/include/x86_64-linux-gnu/sys/select.h \
+ /usr/include/x86_64-linux-gnu/bits/select.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+ /usr/include/x86_64-linux-gnu/bits/select2.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+ /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+ /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/x86_64-linux-gnu/bits/stdlib.h \
+ /usr/include/c++/9/bits/std_abs.h /usr/include/c++/9/bits/algorithmfwd.h \
+ /usr/include/c++/9/bits/stl_heap.h /usr/include/c++/9/bits/stl_tempbuf.h \
+ /usr/include/c++/9/bits/stl_construct.h /usr/include/c++/9/new \
  /usr/include/c++/9/exception /usr/include/c++/9/bits/exception.h \
  /usr/include/c++/9/bits/exception_ptr.h \
  /usr/include/c++/9/bits/cxxabi_init_exception.h \
- /usr/lib/gcc/x86_64-linux-gnu/9/include/stddef.h \
  /usr/include/c++/9/typeinfo /usr/include/c++/9/bits/hash_bytes.h \
  /usr/include/c++/9/bits/nested_exception.h \
- /usr/include/c++/9/bits/memoryfwd.h \
- /usr/include/c++/9/bits/stl_construct.h \
  /usr/include/c++/9/ext/alloc_traits.h \
  /usr/include/c++/9/bits/alloc_traits.h \
+ /usr/include/c++/9/bits/memoryfwd.h \
+ /usr/include/c++/9/bits/uniform_int_dist.h /usr/include/c++/9/limits \
+ /usr/include/c++/9/atomic /usr/include/c++/9/bits/atomic_base.h \
+ /usr/lib/gcc/x86_64-linux-gnu/9/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+ /usr/include/c++/9/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/9/cmath /usr/include/math.h \
+ /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+ /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+ /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+ /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+ /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
+ /usr/include/x86_64-linux-gnu/bits/mathinline.h \
+ /usr/include/c++/9/cstddef /usr/include/c++/9/memory \
+ /usr/include/c++/9/bits/allocator.h \
+ /usr/include/x86_64-linux-gnu/c++/9/bits/c++allocator.h \
+ /usr/include/c++/9/ext/new_allocator.h \
  /usr/include/c++/9/bits/stl_uninitialized.h \
- /usr/include/c++/9/bits/stl_tempbuf.h \
  /usr/include/c++/9/bits/stl_raw_storage_iter.h /usr/include/c++/9/iosfwd \
  /usr/include/c++/9/bits/stringfwd.h /usr/include/c++/9/bits/postypes.h \
  /usr/include/c++/9/cwchar /usr/include/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/floatn.h \
- /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
  /usr/include/c++/9/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/gthr.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/gthr-default.h \
  /usr/include/pthread.h /usr/include/sched.h \
- /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endianness.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h /usr/include/time.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/timex.h \
- /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
- /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
- /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
- /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
- /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
- /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/atomic_word.h \
  /usr/include/c++/9/ext/concurrence.h \
  /usr/include/c++/9/bits/stl_function.h \
  /usr/include/c++/9/backward/binders.h \
  /usr/include/c++/9/bits/uses_allocator.h \
- /usr/include/c++/9/bits/unique_ptr.h /usr/include/c++/9/utility \
- /usr/include/c++/9/bits/stl_relops.h /usr/include/c++/9/initializer_list \
- /usr/include/c++/9/tuple /usr/include/c++/9/array \
- /usr/include/c++/9/stdexcept /usr/include/c++/9/string \
- /usr/include/c++/9/bits/char_traits.h /usr/include/c++/9/cstdint \
- /usr/include/c++/9/bits/localefwd.h \
+ /usr/include/c++/9/bits/unique_ptr.h /usr/include/c++/9/tuple \
+ /usr/include/c++/9/array /usr/include/c++/9/stdexcept \
+ /usr/include/c++/9/string /usr/include/c++/9/bits/char_traits.h \
+ /usr/include/c++/9/cstdint /usr/include/c++/9/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/c++locale.h \
  /usr/include/c++/9/clocale /usr/include/locale.h \
  /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/9/cctype \
@@ -108,21 +136,7 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/c++/9/bits/cxxabi_forced.h \
  /usr/include/c++/9/bits/range_access.h \
  /usr/include/c++/9/bits/basic_string.h \
- /usr/include/c++/9/ext/string_conversions.h /usr/include/c++/9/cstdlib \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
- /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
- /usr/include/x86_64-linux-gnu/sys/types.h /usr/include/endian.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h \
- /usr/include/c++/9/bits/std_abs.h /usr/include/c++/9/cstdio \
+ /usr/include/c++/9/ext/string_conversions.h /usr/include/c++/9/cstdio \
  /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
@@ -145,21 +159,13 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/c++/9/bits/shared_ptr_atomic.h \
  /usr/include/c++/9/backward/auto_ptr.h /usr/include/c++/9/mutex \
  /usr/include/c++/9/chrono /usr/include/c++/9/ratio \
- /usr/include/c++/9/limits /usr/include/c++/9/ctime \
- /usr/include/c++/9/bits/parse_numbers.h /usr/include/c++/9/system_error \
+ /usr/include/c++/9/ctime /usr/include/c++/9/bits/parse_numbers.h \
+ /usr/include/c++/9/system_error \
  /usr/include/x86_64-linux-gnu/c++/9/bits/error_constants.h \
  /usr/include/c++/9/bits/std_mutex.h \
- /usr/include/c++/9/bits/unique_lock.h \
- /opt/ros/noetic/include/geometry_msgs/PoseStamped.h \
- /usr/include/c++/9/vector /usr/include/c++/9/bits/stl_vector.h \
- /usr/include/c++/9/bits/stl_bvector.h /usr/include/c++/9/bits/vector.tcc \
- /opt/ros/noetic/include/ros/types.h \
- /opt/ros/noetic/include/ros/serialization.h \
- /opt/ros/noetic/include/ros/roscpp_serialization_macros.h \
- /opt/ros/noetic/include/ros/macros.h /opt/ros/noetic/include/ros/time.h \
- /opt/ros/noetic/include/ros/platform.h /usr/include/c++/9/stdlib.h \
- /usr/include/c++/9/iostream /usr/include/c++/9/ostream \
- /usr/include/c++/9/ios /usr/include/c++/9/bits/ios_base.h \
+ /usr/include/c++/9/bits/unique_lock.h /usr/include/c++/9/sstream \
+ /usr/include/c++/9/istream /usr/include/c++/9/ios \
+ /usr/include/c++/9/bits/ios_base.h \
  /usr/include/c++/9/bits/locale_classes.h \
  /usr/include/c++/9/bits/locale_classes.tcc /usr/include/c++/9/streambuf \
  /usr/include/c++/9/bits/streambuf.tcc \
@@ -170,20 +176,18 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/c++/9/bits/streambuf_iterator.h \
  /usr/include/x86_64-linux-gnu/c++/9/bits/ctype_inline.h \
  /usr/include/c++/9/bits/locale_facets.tcc \
- /usr/include/c++/9/bits/basic_ios.tcc \
- /usr/include/c++/9/bits/ostream.tcc /usr/include/c++/9/istream \
- /usr/include/c++/9/bits/istream.tcc /usr/include/c++/9/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
- /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
- /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
- /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
- /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
- /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
- /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
- /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
- /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
- /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- /opt/ros/noetic/include/ros/exception.h \
+ /usr/include/c++/9/bits/basic_ios.tcc /usr/include/c++/9/ostream \
+ /usr/include/c++/9/bits/ostream.tcc /usr/include/c++/9/bits/istream.tcc \
+ /usr/include/c++/9/bits/sstream.tcc /usr/include/c++/9/vector \
+ /usr/include/c++/9/bits/stl_vector.h \
+ /usr/include/c++/9/bits/stl_bvector.h /usr/include/c++/9/bits/vector.tcc \
+ /opt/ros/noetic/include/geometry_msgs/PoseStamped.h \
+ /opt/ros/noetic/include/ros/types.h \
+ /opt/ros/noetic/include/ros/serialization.h \
+ /opt/ros/noetic/include/ros/roscpp_serialization_macros.h \
+ /opt/ros/noetic/include/ros/macros.h /opt/ros/noetic/include/ros/time.h \
+ /opt/ros/noetic/include/ros/platform.h /usr/include/c++/9/stdlib.h \
+ /usr/include/c++/9/iostream /opt/ros/noetic/include/ros/exception.h \
  /opt/ros/noetic/include/ros/duration.h /usr/include/c++/9/math.h \
  /usr/include/c++/9/climits \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/limits.h \
@@ -199,7 +203,7 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/boost/math/tools/config.hpp /usr/include/boost/config.hpp \
  /usr/include/boost/config/user.hpp \
  /usr/include/boost/config/detail/select_compiler_config.hpp \
- /usr/include/boost/config/compiler/gcc.hpp /usr/include/c++/9/cstddef \
+ /usr/include/boost/config/compiler/gcc.hpp \
  /usr/include/boost/config/detail/select_stdlib_config.hpp \
  /usr/include/boost/config/stdlib/libstdcpp3.hpp /usr/include/unistd.h \
  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -223,10 +227,6 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/boost/config/workaround.hpp \
  /usr/include/boost/type_traits/is_integral.hpp \
  /usr/include/boost/type_traits/integral_constant.hpp \
- /usr/include/c++/9/algorithm /usr/include/c++/9/bits/stl_algo.h \
- /usr/include/c++/9/bits/algorithmfwd.h \
- /usr/include/c++/9/bits/stl_heap.h \
- /usr/include/c++/9/bits/uniform_int_dist.h \
  /usr/include/boost/config/no_tr1/cmath.hpp /usr/include/c++/9/cfloat \
  /usr/lib/gcc/x86_64-linux-gnu/9/include/float.h \
  /usr/include/boost/math/tools/user.hpp \
@@ -238,8 +238,7 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/libintl.h /usr/include/c++/9/bits/codecvt.h \
  /usr/include/c++/9/bits/locale_facets_nonio.tcc \
  /usr/include/c++/9/bits/locale_conv.h \
- /usr/include/c++/9/bits/quoted_string.h /usr/include/c++/9/sstream \
- /usr/include/c++/9/bits/sstream.tcc /usr/include/c++/9/cstring \
+ /usr/include/c++/9/bits/quoted_string.h /usr/include/c++/9/cstring \
  /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
@@ -630,6 +629,9 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /opt/ros/noetic/include/geometry_msgs/Pose.h \
  /opt/ros/noetic/include/geometry_msgs/Point.h \
  /opt/ros/noetic/include/geometry_msgs/Quaternion.h \
+ /opt/ros/noetic/include/geometry_msgs/Twist.h \
+ /opt/ros/noetic/include/geometry_msgs/Vector3.h \
+ /opt/ros/noetic/include/nav_msgs/Path.h \
  /opt/ros/noetic/include/ros/ros.h /opt/ros/noetic/include/ros/rate.h \
  /opt/ros/noetic/include/ros/console.h \
  /opt/ros/noetic/include/ros/console_backend.h /usr/include/c++/9/cstdarg \
@@ -1111,22 +1113,12 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /opt/ros/noetic/include/ros/param.h /opt/ros/noetic/include/ros/topic.h \
  /opt/ros/noetic/include/ros/node_handle.h \
  /opt/ros/noetic/include/std_msgs/Int32.h \
- /opt/ros/noetic/include/tf/transform_listener.h \
- /opt/ros/noetic/include/sensor_msgs/PointCloud.h \
- /opt/ros/noetic/include/geometry_msgs/Point32.h \
- /opt/ros/noetic/include/sensor_msgs/ChannelFloat32.h \
- /opt/ros/noetic/include/std_msgs/Empty.h \
- /opt/ros/noetic/include/tf/tfMessage.h \
- /opt/ros/noetic/include/geometry_msgs/TransformStamped.h \
- /opt/ros/noetic/include/geometry_msgs/Transform.h \
- /opt/ros/noetic/include/geometry_msgs/Vector3.h \
- /opt/ros/noetic/include/tf/tf.h /opt/ros/noetic/include/tf/exceptions.h \
- /opt/ros/noetic/include/tf2/exceptions.h \
- /opt/ros/noetic/include/tf/time_cache.h \
  /opt/ros/noetic/include/tf/transform_datatypes.h \
  /opt/ros/noetic/include/geometry_msgs/PointStamped.h \
  /opt/ros/noetic/include/geometry_msgs/Vector3Stamped.h \
  /opt/ros/noetic/include/geometry_msgs/QuaternionStamped.h \
+ /opt/ros/noetic/include/geometry_msgs/TransformStamped.h \
+ /opt/ros/noetic/include/geometry_msgs/Transform.h \
  /opt/ros/noetic/include/tf/LinearMath/Transform.h \
  /opt/ros/noetic/include/tf/LinearMath/Matrix3x3.h \
  /opt/ros/noetic/include/tf/LinearMath/Vector3.h \
@@ -1134,6 +1126,15 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /opt/ros/noetic/include/tf/LinearMath/MinMax.h \
  /opt/ros/noetic/include/tf/LinearMath/Quaternion.h \
  /opt/ros/noetic/include/tf/LinearMath/QuadWord.h \
+ /opt/ros/noetic/include/tf/transform_listener.h \
+ /opt/ros/noetic/include/sensor_msgs/PointCloud.h \
+ /opt/ros/noetic/include/geometry_msgs/Point32.h \
+ /opt/ros/noetic/include/sensor_msgs/ChannelFloat32.h \
+ /opt/ros/noetic/include/std_msgs/Empty.h \
+ /opt/ros/noetic/include/tf/tfMessage.h /opt/ros/noetic/include/tf/tf.h \
+ /opt/ros/noetic/include/tf/exceptions.h \
+ /opt/ros/noetic/include/tf2/exceptions.h \
+ /opt/ros/noetic/include/tf/time_cache.h \
  /usr/include/boost/unordered_map.hpp \
  /usr/include/boost/unordered/unordered_map.hpp \
  /usr/include/boost/core/explicit_operator_bool.hpp \
@@ -1366,7 +1367,6 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/boost/parameter/aux_/pack/tag_template_keyword_arg.hpp \
  /usr/include/boost/signals2/shared_connection_block.hpp \
  /opt/ros/noetic/include/geometry_msgs/TwistStamped.h \
- /opt/ros/noetic/include/geometry_msgs/Twist.h \
  /opt/ros/noetic/include/tf2_ros/buffer.h \
  /opt/ros/noetic/include/tf2_ros/buffer_interface.h \
  /opt/ros/noetic/include/tf2/buffer_core.h \
@@ -1524,5 +1524,14 @@ tag_graph_nav/CMakeFiles/tag_navigator_node.dir/src/tag_navigator.cpp.o: \
  /usr/include/boost/thread/detail/atomic_redef_macros.hpp \
  /opt/ros/noetic/include/tf2_ros/transform_listener.h \
  /opt/ros/noetic/include/tf2_msgs/TFMessage.h \
- /home/iimt/dtx_ws/src/tag_graph_nav/include/tag_graph_nav/tag_route_graph.hpp \
- /opt/ros/noetic/include/nav_msgs/Path.h
+ /home/iimt/dtx_ws/src/tag_graph_nav/include/tag_graph_nav/tag_route_graph.h \
+ /usr/include/c++/9/fstream \
+ /usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/9/bits/c++io.h \
+ /usr/include/c++/9/bits/fstream.tcc /usr/include/c++/9/queue \
+ /usr/include/c++/9/bits/stl_queue.h /usr/include/jsoncpp/json/json.h \
+ /usr/include/jsoncpp/json/autolink.h /usr/include/jsoncpp/json/config.h \
+ /usr/include/jsoncpp/json/version.h /usr/include/jsoncpp/json/value.h \
+ /usr/include/jsoncpp/json/forwards.h /usr/include/jsoncpp/json/reader.h \
+ /usr/include/jsoncpp/json/features.h /usr/include/c++/9/stack \
+ /usr/include/c++/9/bits/stl_stack.h /usr/include/jsoncpp/json/writer.h

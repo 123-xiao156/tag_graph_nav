@@ -107,6 +107,15 @@ public:
    **********************************************************************/
   double RouteLineYaw(const std::vector<EdgeKey> &route) const;
   /**********************************************************************
+   * Description: 按相邻边方向变化和运动方式变化将路线拆成直线路段
+   * Input:     route：规划得到的连续有向边序列
+   *            turn_angle_threshold：判定为拐点的最小方向变化量，单位rad
+   * Output:    sections：直线路段列表，每个路段包含一条或多条连续边
+   * Return:    路线和阈值有效时返回true，否则返回false
+   **********************************************************************/
+  bool SplitRouteAtTurns(const std::vector<EdgeKey> &route, double turn_angle_threshold,
+                         std::vector<std::vector<EdgeKey>> &sections) const;
+  /**********************************************************************
    * Description: 按照行驶顺序获取指定边上的全部位姿
    * Input:     key：有向边标识
    * Output:    无

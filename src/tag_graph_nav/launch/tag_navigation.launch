@@ -21,6 +21,7 @@
     <param name="lateral_kp" value="1.0"/>
     <param name="linear_kp" value="0.7"/>
     <param name="heading_hold" value="0.35"/>
+    <param name="turn_angle_threshold" value="0.261799"/>
     <param name="node_snap_distance" value="0.10"/>
     <param name="edge_snap_distance" value="0.40"/>
     <param name="max_tag_age" value="0.5"/>

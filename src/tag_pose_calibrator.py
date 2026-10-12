@@ -16,11 +16,11 @@ import tf
 
 
 # 标定任务固定配置：直接修改这里，不需要在启动命令中传入。
-ROUTE_MAP_FILE = "/home/iimt/ltz_ws/tag_route_map.json"
-OUTPUT_FILE = "/home/iimt/ltz_ws/tag_route_map.json"
+ROUTE_MAP_FILE = "/home/iimt/dtx_ws/src/tag_graph_nav/config/tag_route_map.json"
+OUTPUT_FILE = "/home/iimt/dtx_ws/src/tag_graph_nav/config/tag_route_map.json"
 SAMPLES_PER_TAG = 30
-TAG_IDS = [0, 1, 2, 3, 4, 5, 6]
-LOCALIZATION_ONLY_TAG_IDS = {5, 6}
+TAG_IDS = list(range(13))
+LOCALIZATION_ONLY_TAG_IDS = {9, 10, 11, 12}
 
 
 def normalize_angle(angle):

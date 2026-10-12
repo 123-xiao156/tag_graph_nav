@@ -86,6 +86,7 @@ bool TagNavigator::ValidateParameters() const
   if (arrival_tolerance_ < 0.0 || angle_tolerance_ < 0.0 ||
       max_linear_ <= 0.0 || max_angular_ <= 0.0 || min_linear_ < 0.0 ||
       min_linear_ > max_linear_ || control_rate_ <= 0.0 ||
+      !std::isfinite(turn_angle_threshold_) || turn_angle_threshold_ < 0.0 || turn_angle_threshold_ > M_PI ||
       node_snap_distance_ < 0.0 || edge_snap_distance_ < 0.0 ||
       max_tag_age_ <= 0.0 || max_lost_count_ < 0 || navigation_timeout_ <= 0.0)
   {
@@ -327,39 +328,48 @@ void TagNavigator::StartNavigation(int target_id)
       }
       ROS_INFO("Directed route: %s", route.empty() ? "at target node" : route_text.str().c_str());
 
-      const Pose2D target_pose = graph_->TagTargetPose(target_id);
-      double path_yaw = target_pose.yaw;
-      RouteEdge route_settings;
-      route_settings.motion = "forward";
-      route_settings.speed_limit = max_linear_;
-      bool route_settings_valid = true;
-      if (!route.empty())
+      std::vector<std::vector<EdgeKey>> sections;
+      if (!graph_->SplitRouteAtTurns(route, turn_angle_threshold_, sections))
       {
-        // 单条拟合直线不能混合前进和倒车，速度采用整条路线中的最小限速。
-        std::set<std::string> motions;
-        double minimum_speed = std::numeric_limits<double>::infinity();
-        for (const EdgeKey &key : route)
-        {
-          const RouteEdge &edge = graph_->Edges().at(key);
-          motions.insert(edge.motion);
-          minimum_speed = std::min(minimum_speed, edge.speed_limit);
-        }
-        if (motions.size() != 1U)
-        {
-          ROS_ERROR("One fitted line cannot mix forward and reverse edges");
-          route_settings_valid = false;
-        }
-        else
-        {
-          path_yaw = graph_->RouteLineYaw(route);
-          route_settings.motion = graph_->Edges().at(route.front()).motion;
-          route_settings.speed_limit = minimum_speed;
-        }
+        ROS_ERROR("Cannot split directed route to tag_%d", target_id);
       }
-      if (route_settings_valid)
+      else if (sections.empty())
       {
-        PublishPath(robot_pose, target_pose, path_yaw);
-        success = FollowLine(target_pose, path_yaw, route_settings, started_at);
+        const Pose2D target_pose = graph_->TagTargetPose(target_id);
+        RouteEdge route_settings;
+        route_settings.motion = "forward";
+        route_settings.speed_limit = max_linear_;
+        PublishPath(robot_pose, target_pose, target_pose.yaw);
+        success = FollowLine(target_pose, target_pose.yaw, route_settings, started_at);
+      }
+      else
+      {
+        success = true;
+        for (std::size_t section_index = 0; section_index < sections.size(); ++section_index)
+        {
+          const std::vector<EdgeKey> &section = sections[section_index];
+          const int section_goal_id = section.back().second;
+          const Pose2D section_goal = graph_->TagTargetPose(section_goal_id);
+          const double path_yaw = graph_->RouteLineYaw(section);
+          RouteEdge route_settings = graph_->Edges().at(section.front());
+          for (const EdgeKey &key : section)
+          {
+            route_settings.speed_limit = std::min(route_settings.speed_limit, graph_->Edges().at(key).speed_limit);
+          }
+
+          ROS_INFO("Straight section %zu/%zu ends at tag_%d", section_index + 1U, sections.size(), section_goal_id);
+          PublishPath(robot_pose, section_goal, path_yaw);
+          if (!FollowLine(section_goal, path_yaw, route_settings, started_at))
+          {
+            success = false;
+            break;
+          }
+          robot_pose = section_goal;
+          if (section_index + 1U < sections.size())
+          {
+            ROS_INFO("Turning at tag_%d", section_goal_id);
+          }
+        }
       }
     }
   }

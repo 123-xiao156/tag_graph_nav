@@ -5,7 +5,15 @@
     {"id": 1, "targetable": true, "tag_pose": {"x": 1.386348355, "y": -0.003317396, "yaw": -1.566992695}},
     {"id": 2, "targetable": true, "tag_pose": {"x": 1.889919589, "y": -0.006802828, "yaw": -1.550798123}},
     {"id": 3, "targetable": true, "tag_pose": {"x": 2.421652861, "y": -0.000706771, "yaw": -1.549476380}},
-    {"id": 4, "targetable": true, "tag_pose": {"x": 2.901425289, "y": 0.011261252, "yaw": -1.542216278}}
+    {"id": 4, "targetable": true, "tag_pose": {"x": 2.901425289, "y": 0.011261252, "yaw": -1.542216278}},
+    {"id": 5, "targetable": true, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 6, "targetable": true, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 7, "targetable": true, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 8, "targetable": true, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 9, "targetable": false, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 10, "targetable": false, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 11, "targetable": false, "tag_pose": {"x": null, "y": null, "yaw": null}},
+    {"id": 12, "targetable": false, "tag_pose": {"x": null, "y": null, "yaw": null}}
   ],
   "edges": [
     {"source": 0, "destination": 1, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
@@ -15,7 +23,15 @@
     {"source": 2, "destination": 3, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
     {"source": 3, "destination": 2, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
     {"source": 3, "destination": 4, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
-    {"source": 4, "destination": 3, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"}
+    {"source": 4, "destination": 3, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 4, "destination": 5, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 5, "destination": 4, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 5, "destination": 6, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 6, "destination": 5, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 6, "destination": 7, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 7, "destination": 6, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"},
+    {"source": 7, "destination": 8, "cost": 1.0, "speed_limit": 0.25, "motion": "forward"},
+    {"source": 8, "destination": 7, "cost": 1.0, "speed_limit": 0.20, "motion": "reverse"}
   ],
   "calibration": {
     "generated_at": "2026-09-28T13:27:46.640473+00:00",

@@ -5,10 +5,8 @@
 #include <atomic>
 #include <cmath>
 #include <cstddef>
-#include <limits>
 #include <memory>
 #include <mutex>
-#include <set>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -26,7 +24,7 @@
 
 namespace tag_graph_nav
 {
-// 通过AprilTag实时定位，并执行有向图路径规划和直线跟踪控制
+// 通过AprilTag实时定位，并分段执行有向图路径规划和直线跟踪控制
 class TagNavigator
 {
 public:
@@ -89,10 +87,10 @@ private:
    **********************************************************************/
   geometry_msgs::PoseStamped ToPoseStamped(const Pose2D &pose) const;
   /**********************************************************************
-   * Description: 发布机器人投影点和最终目标点组成的规划路径
+   * Description: 发布机器人投影点和当前直线路段终点组成的规划路径
    * Input:     robot_pose：机器人当前二维位姿
-   *            target_pose：最终目标二维位姿
-   *            path_yaw：拟合路径直线的偏航角
+   *            target_pose：当前直线路段终点位姿
+   *            path_yaw：当前直线路段的偏航角
    * Output:    无
    * Return:    无
    **********************************************************************/
@@ -105,17 +103,17 @@ private:
    **********************************************************************/
   void StopRobot() const;
   /**********************************************************************
-   * Description: 使用横向误差和航向误差P控制跟踪拟合直线
-   * Input:     target_pose：最终目标二维位姿
-   *            path_yaw：拟合路径直线的偏航角
-   *            route_settings：整条路线的运动方向和速度限制
+   * Description: 使用横向误差和航向误差P控制跟踪当前直线路段
+   * Input:     target_pose：当前直线路段终点位姿
+   *            path_yaw：当前直线路段的偏航角
+   *            route_settings：当前直线路段的运动方向和速度限制
    *            started_at：本次导航任务开始时间
    * Output:    无
    * Return:    到达目标位置和角度时返回true，否则返回false
    **********************************************************************/
   bool FollowLine(const Pose2D &target_pose, double path_yaw, const RouteEdge &route_settings, const ros::Time &started_at) const;
   /**********************************************************************
-   * Description: 定位机器人、规划有向路径并启动直线跟踪
+   * Description: 定位机器人、规划有向路径并按拐点分段执行直线跟踪
    * Input:     target_id：目标Tag ID
    * Output:    无
    * Return:    无
@@ -143,6 +141,7 @@ private:
   double lateral_kp_{1.0};               // 横向误差比例系数
   double linear_kp_{0.7};                // 剩余距离比例系数
   double heading_hold_{0.35};             // 允许输出线速度的最大航向误差
+  double turn_angle_threshold_{0.261799}; // 路线拐点判定阈值，默认15度
   double node_snap_distance_{0.10};       // 节点匹配距离
   double edge_snap_distance_{0.40};       // 有向边匹配横向距离
   double max_tag_age_{0.5};               // Tag TF最大允许时间

@@ -34,9 +34,15 @@ Send a target Tag ID:
 rostopic pub -1 /target_tag_id std_msgs/Int32 "data: 4"
 ```
 
-The node publishes velocity to `/cmd_vel`, the fitted path to
+The node publishes velocity to `/cmd_vel`, the current straight section to
 `/tag_navigator/planned_path`, and the Tag-derived robot pose to
 `/tag_navigator/estimated_pose`.
+
+The planned directed route is split at geometric turns. Tags on the same
+straight section are passed continuously without stopping. At a turn, the
+robot stops at the corner Tag, rotates in place toward the next section, and
+then continues. `~turn_angle_threshold` controls the minimum direction change
+that is treated as a turn; the launch default is `0.261799` rad (15 degrees).
 
 Override the map or topics from the launch command line when needed:
 
